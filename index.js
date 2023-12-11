@@ -31,6 +31,10 @@ let total_path_length = []
 // let success_rate = [];
 let path_count = 0;
 
+let CAT_SCORE = 0;
+let MOUSE_SCORE = 0;
+let STALEMATE_SCORE = 0;
+
 // Declare numCats as a global variable
 window.numCats = numCats;
 
@@ -55,6 +59,25 @@ const mapCollection = {
   ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
 ]
 };
+
+function positionScoreboard() {
+    const scoreboard = document.getElementById('scoreboard');
+    scoreboard.style.top = '20px';
+    scoreboard.style.right = `20px`;
+}
+
+window.addEventListener('resize', positionScoreboard);
+
+function updateScoreboard(cat_score, mouse_score, stalemate) {
+    const scoreboard = document.getElementById('scoreboard');
+    scoreboard.innerHTML = `Q1 Cat Catches: ${cat_score} | Q1 Mouse Escapes: ${mouse_score} | Stalemates: ${stalemate}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateScoreboard(CAT_SCORE, MOUSE_SCORE, STALEMATE_SCORE); // Initialize scoreboard content
+    positionScoreboard(); // Position scoreboard
+});
+
 
 function get_discrete_X(position_x) {
   return parseInt((position_x - startingX + 1) / (Boundary.width));   // + 1 is to fix a rounding error
@@ -1479,15 +1502,22 @@ function animate() {
       }
     }
 
-    if(TESTING && (restart || restart2)) {
+    if(TESTING && (restart || restart2) || (path_count % 500 === 0)) {
       //testing phase means we do not change epsilon
       if(restart2) {
         total_escape_paths += path_count;
         testing_success += 1;
+        MOUSE_SCORE += 1;
+      }
+      else if(restart) {
+        total_caught_paths += path_count;
+        CAT_SCORE += 1;
       }
       else {
-        total_caught_paths += path_count;
+        STALEMATE_SCORE += 1;
       }
+
+      updateScoreboard(CAT_SCORE, MOUSE_SCORE, STALEMATE_SCORE)
 
       TESTING_EPISODES += 1
       myCats[0].rows = [];
@@ -1502,6 +1532,10 @@ function animate() {
       myCats[0].movement_in_progress = false;
       player.movement_in_progress = false;
 
+
+
+
+
       if(TESTING_EPISODES % 200 === 0) {
 
         total_path_length.push((total_escape_paths + total_caught_paths) / 200);
@@ -1515,99 +1549,10 @@ function animate() {
   }
 
 
-
-  // if(animate_iteration % UPDATE_FREQUENCY === 0) {
-
-    
-
-  //   //CHECK IF PLAYER AND CAT ARE RIGHT NEXT TO EACH OTHER;
-  //   if(checkCollisionAndRestart()) {
-  //     restart = true;
-  //   }
-
-  //   if(check_edge_case) {
-  //     if((get_discrete_Y(myCats[0].position.y) == old_mouse_row) && (get_discrete_X(myCats[0].position.x) == old_mouse_col) &&
-  //       (get_discrete_Y(player.position.y) == old_cat_row) && (get_discrete_X(player.position.x) == old_cat_col)) {
-  //         restart = true;
-  //       }
-  //   }
-
-
-  //   if(areAdjacent(get_discrete_Y(myCats[0].position.y), get_discrete_X(myCats[0].position.x), get_discrete_Y(player.position.y), get_discrete_X(player.position.x))) {
-  //     check_edge_case = true;   //be on alert
-  //   }
-
-  //   if(player_observed) {
-  //     updateStateHistory(stateHistory, state_Index, maxHistory);
-
-  //     if(observed_frequency % 10 === 0) {
-  //       saved_state_index = state_Index;
-  //     }
-  //   }
-    
-
-  //   old_cat_distance = new_cat_distance;    //SAVE THIS VALUE FOR NEXT ITERATION
-  //   old_exit_distance = new_exit_distance;  
-
-  //   if(TESTING && (restart || restart2)) {
-  //     //testing phase means we do not change epsilon
-  //     if(restart2) {
-  //       total_escape_paths += path_count;
-  //       testing_success += 1;
-  //     }
-  //     else {
-  //       total_caught_paths += path_count;
-  //     }
-
-  //     TESTING_EPISODES += 1
-  //     myCats[0].rows = [];
-  //     myCats[0].col = [];
-  //     let positions = selectFreePositions(map);
-
-  //     //reset agent positions
-  //     player.position.y = get_continuous_X(positions.mousePosition.row) 
-  //     player.position.x = get_continuous_Y(positions.mousePosition.col)    
-  //     myCats[0].position.y = get_continuous_X(positions.catPosition.row) 
-  //     myCats[0].position.x = get_continuous_Y(positions.catPosition.col) 
-
-  //     if(TESTING_EPISODES % 200 === 0) {
-
-  //       total_path_length.push((total_escape_paths + total_caught_paths) / 200);
-
-  //       testing_success = 0;
-  //     }
-  //     path_count = 0;   //counting number of paths taken
-  //   }
-  //   // -----------------------------------------------------------------------------
-  // }
-
   
 
 }
 animate()
-
-// fetch('qTable.json')
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok ' + response.statusText);
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         const my_table = data;
-//         // Use the Q-table here
-//         console.log(my_table);
-//     })
-//     .catch(error => console.error('Error fetching Q-table:', error));
-
-
-// // Assume rewards is an array of reward values
-
-
-
-
-// Example usage:
-
 
 
 
