@@ -68,13 +68,13 @@ function positionScoreboard() {
 
 window.addEventListener('resize', positionScoreboard);
 
-function updateScoreboard(cat_score, mouse_score, stalemate) {
+function updateScoreboard(cat_score, mouse_score, stalemate, path) {
     const scoreboard = document.getElementById('scoreboard');
-    scoreboard.innerHTML = `Q1 Cat Catches: ${cat_score} | Q1 Mouse Escapes: ${mouse_score} | Stalemates: ${stalemate}`;
+    scoreboard.innerHTML = `Q1 Cat Catches: ${cat_score} | Q1 Mouse Escapes: ${mouse_score} | Stalemates: ${stalemate} | Steps taken: ${path}`;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateScoreboard(CAT_SCORE, MOUSE_SCORE, STALEMATE_SCORE); // Initialize scoreboard content
+    updateScoreboard(CAT_SCORE, MOUSE_SCORE, STALEMATE_SCORE, path_count); // Initialize scoreboard content
     positionScoreboard(); // Position scoreboard
 });
 
@@ -1033,8 +1033,6 @@ function animate() {
               action = Math.floor(Math.random() * 4);
             }
           }
-          
-          path_count += 1;    //counting number of paths mouse taken
         }
 
         if (TESTING && isOscillating(stateHistory, maxHistory)) {
@@ -1267,6 +1265,9 @@ function animate() {
     //obtain the state in which the cat is in:
 
     if(!myCats[0].movement_in_progress || myCats[0].future_row === -2) {
+      path_count += 1;    //counting number of paths mouse taken
+      updateScoreboard(CAT_SCORE, MOUSE_SCORE, STALEMATE_SCORE, path_count)
+
       cat_observed_frequency += 1;
       cat_observed = true;
       my_matrix = read_write_values(map)
@@ -1502,7 +1503,7 @@ function animate() {
       }
     }
 
-    if(TESTING && (restart || restart2) || (path_count % 500 === 0)) {
+    if(TESTING && (restart || restart2) || (path_count % 150 === 0)) {
       //testing phase means we do not change epsilon
       if(restart2) {
         total_escape_paths += path_count;
@@ -1517,7 +1518,7 @@ function animate() {
         STALEMATE_SCORE += 1;
       }
 
-      updateScoreboard(CAT_SCORE, MOUSE_SCORE, STALEMATE_SCORE)
+      updateScoreboard(CAT_SCORE, MOUSE_SCORE, STALEMATE_SCORE, path_count);
 
       TESTING_EPISODES += 1
       myCats[0].rows = [];
