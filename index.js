@@ -1022,7 +1022,7 @@ function animate() {
         //if we are not timed out AND testing, then get best action
         //if we are not testing AND epsilon is less than random then take best action.
         if (TESTING) {
-          if(Math.random() > 0.2) {
+          if(Math.random() > 0.1) {
             action = getBestAction(Qtable, state_Index);
           }
           else {
@@ -1503,7 +1503,7 @@ function animate() {
       }
     }
 
-    if(TESTING && (restart || restart2) || (path_count % 150 === 0)) {
+    if(TESTING && (restart || restart2) || (path_count % 125 === 0)) {
       //testing phase means we do not change epsilon
       if(restart2) {
         total_escape_paths += path_count;
